@@ -13,7 +13,7 @@ namespace ActivitiesList.API.Models
 
         public string Description { get; set; }
 
-        public string Priority { get; set; }
+        public Priority Priority { get; set; }
 
         public Activity() {}
 
