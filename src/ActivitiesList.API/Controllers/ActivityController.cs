@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ActivitiesList.API.Data;
-using ActivitiesList.API.Models;
+using ActivitiesList.Data.Context;
+using ActivitiesList.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ActivitiesList.API.Controllers
