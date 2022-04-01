@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using ActivitiesList.Data.Context;
 using ActivitiesList.Domain.Entities;
+using ActivitiesList.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ActivitiesList.API.Controllers
@@ -12,61 +14,110 @@ namespace ActivitiesList.API.Controllers
     [Route("api/[controller]")]
     public class ActivityController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IActivityService _activityService;
 
-        public ActivityController(DataContext context)
+        public ActivityController(IActivityService activityService)
         {
-            _context = context;
+            _activityService = activityService;
         }
 
         [HttpGet]
-        public IEnumerable<Activity> Get()
+        public async Task<ActionResult> Get()
         {
-            return _context.Activities;
+            try
+            {
+                var activities = await _activityService.GetAllActivitiesAsync();
+                if (activities == null) return NoContent();
+
+                return Ok(activities);
+            }
+            catch (System.Exception ex)
+            {
+                return this
+                    .StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Error to get Activities. Error: {ex.Message}");
+            }
         }
 
         [HttpGet("{id}")]
-        public Activity Get(int id)
+        public async Task<ActionResult> Get(int id)
         {
-            return _context.Activities.FirstOrDefault(acty => acty.Id == id);
+            try
+            {
+                var activities =
+                    await _activityService.GetActivityByIdAsync(id);
+                if (activities == null) return NoContent();
+
+                return Ok(activities);
+            }
+            catch (System.Exception ex)
+            {
+                return this
+                    .StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Error to get Activity id: {id}. Error: {ex.Message}");
+            }
         }
 
         [HttpPost]
-        public Activity Post(Activity activity)
+        public async Task<ActionResult> Post(Activity model)
         {
-            _context.Activities.Add (activity);
+            try
+            {
+                var act = await _activityService.AddActivity(model);
 
-            if (_context.SaveChanges() > 0)
-                return activity;
-            else
-                throw new Exception("You didn't add an activity");
+                if (act == null) return NoContent();
+
+                return Ok(act);
+            }
+            catch (System.Exception ex)
+            {
+                return this
+                    .StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Error to save the Activity. Error: {ex.Message}");
+            }
         }
 
         [HttpPut("{id}")]
-        public Activity Put(int id, Activity activity)
+        public async Task<ActionResult> Put(int id, Activity activity)
         {
             if (activity.Id != id)
-                throw new Exception("You can't update an activity with different id");
+                this
+                    .StatusCode(StatusCodes.Status409Conflict,
+                    $"You can't update an activity with different id");
 
-            _context.Update (activity);
-            if (_context.SaveChanges() > 0)
-                return _context
-                    .Activities
-                    .FirstOrDefault(acty => acty.Id == id);
-            else
-                return new Activity();
+            try
+            {
+                var act = await _activityService.UpdateActivity(activity);
+
+                if (act == null) return NoContent();
+
+                return Ok(act);
+            }
+            catch (System.Exception ex)
+            {
+                return this
+                    .StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Error to update activity Id: {id}. Error: {ex.Message}");
+            }
         }
 
         [HttpDelete("{id}")]
-        public bool Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var activity =
-                _context.Activities.FirstOrDefault(acty => acty.Id == id);
-            if (activity == null)
-                throw new Exception("There is not actvity to delete");
-            _context.Remove (activity);
-
-            return _context.SaveChanges() > 0;
+            try
+            {
+                var act = await _activityService.DeleteActivity(id);
+                if (act)
+                    return Ok(act);
+                else
+                    return BadRequest($"Something went wrong to delete this activity");
+            }
+            catch (System.Exception ex)
+            {
+                return this
+                    .StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Error to delete activity Id: {id}. Error: {ex.Message}");
+            }
         }
     }
 }

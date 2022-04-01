@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using ActivitiesList.Data.Context;
+using ActivitiesList.Data.Repositories;
+using ActivitiesList.Domain.Interfaces.Repositories;
+using ActivitiesList.Domain.Interfaces.Services;
+using ActivitiesList.Domain.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,6 +38,11 @@ namespace ActivitiesList.API
                     options
                         .UseSqlite(Configuration
                             .GetConnectionString("Default")));
+
+            services.AddScoped<IActivityRepo, ActivityRepo>();
+            services.AddScoped<IGeneralRepo, GeneralRepo>();
+            services.AddScoped<IActivityService, ActivityService>();
+            
             services
                 .AddControllers()
                 .AddJsonOptions(options =>

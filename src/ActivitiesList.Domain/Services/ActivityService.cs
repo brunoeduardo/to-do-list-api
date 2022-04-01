@@ -89,7 +89,7 @@ namespace ActivitiesList.Domain.Services
             if (model.ConclusionDate != null)
                 throw new Exception("You can't update a completed activity ");
 
-            if (await _activityRepo.GetByIdAsync(model.Id) == null)
+            if (await _activityRepo.GetByIdAsync(model.Id) != null)
             {
                 _activityRepo.Update (model);
                 if (await _activityRepo.SaveChangesAsync()) return model;

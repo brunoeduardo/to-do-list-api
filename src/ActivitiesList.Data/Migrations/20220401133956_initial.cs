@@ -16,7 +16,7 @@ namespace ActivitiesList.Data.Migrations
                     Title = table.Column<string>(type: "varchar(100)", nullable: true),
                     Description = table.Column<string>(type: "varchar(255)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ConclusionDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ConclusionDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Priority = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>

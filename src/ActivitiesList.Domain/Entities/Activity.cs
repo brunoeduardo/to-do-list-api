@@ -15,24 +15,30 @@ namespace ActivitiesList.Domain.Entities
 
         public DateTime CreatedDate { get; set; }
 
-        public DateTime ConclusionDate { get; set; }
+        public DateTime? ConclusionDate { get; set; }
 
         public Priority Priority { get; set; }
 
-        public Activity() => CreatedDate = DateTime.Now;
+        public Activity()
+        {
+            CreatedDate = DateTime.Now;
+            ConclusionDate = null;
+        }
 
-        public Activity(int id, string title, string description) {
-            Id =id;
+        public Activity(int id, string title, string description) :
+            this()
+        {
+            Id = id;
             Title = title;
             Description = description;
         }
 
         public void Conclusion()
         {
-            if(CreatedDate == null)
-            CreatedDate = DateTime.Now;
+            if (ConclusionDate == null)
+                ConclusionDate = DateTime.Now;
             else
-            throw new Exception($"Activity completed in {ConclusionDate.ToString("dd/MM/yyyy hh:mm")}");
+                throw new Exception($"Activity completed in {ConclusionDate?.ToString("dd/MM/yyyy hh:mm")}");
         }
     }
 }
